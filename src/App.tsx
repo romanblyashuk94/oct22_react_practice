@@ -50,6 +50,11 @@ export const App: React.FC = () => {
 
   const visibleProducts = filterProducts(selectedOwnerId, nameFilter);
 
+  const handleResetAllClick = () => {
+    setSelectedOwnerId(0);
+    setNameFilter('');
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -161,6 +166,7 @@ export const App: React.FC = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={handleResetAllClick}
 
               >
                 Reset all filters
