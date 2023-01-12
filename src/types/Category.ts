@@ -4,5 +4,5 @@ export interface Category {
   id: number,
   title: string,
   icon: string,
-  owner: User | null
+  owner?: User
 }

@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
+
 import { FC, useState } from 'react';
 import cn from 'classnames';
 
-import { Product } from '../../types/Product';
-import { SortType } from '../../types/SortTypes';
+import { Product } from '../types/Product';
+import { SortType } from '../types/SortTypes';
 
 type Props = {
   visibleProducts: Product[]
@@ -116,7 +117,10 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     Product
 
-                    <a href="#/" onClick={() => handleSortClick(SortType.PRODUCT)}>
+                    <a
+                      href="#/"
+                      onClick={() => handleSortClick(SortType.PRODUCT)}
+                    >
                       <span className="icon">
                         <i
                           data-cy="SortIcon"
@@ -137,7 +141,10 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     Category
 
-                    <a href="#/" onClick={() => handleSortClick(SortType.CATEGORY)}>
+                    <a
+                      href="#/"
+                      onClick={() => handleSortClick(SortType.CATEGORY)}
+                    >
                       <span className="icon">
                         <i
                           data-cy="SortIcon"

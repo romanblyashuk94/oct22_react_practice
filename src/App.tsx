@@ -4,31 +4,12 @@ import './App.scss';
 
 import cn from 'classnames';
 import usersFromServer from './api/users';
-import categoriesFromServer from './api/categories';
-import productsFromServer from './api/products';
-import { Category } from './types/Category';
-import { Product } from './types/Product';
-import { ProductsList } from './api/components/ProductsList';
-
-const getUserById = (id: number) => (
-  usersFromServer.find(user => user.id === id) || null
-);
-
-const getCategoryById = (id: number, categories: Category[]) => (
-  categories.find(category => category.id === id) || null
-);
-
-const preparedCategories: Category[] = categoriesFromServer.map(category => ({
-  ...category,
-  owner: getUserById(category.ownerId),
-}));
-
-const preparedProducts: Product[] = productsFromServer.map(product => ({
-  ...product,
-  category: getCategoryById(product.categoryId, preparedCategories),
-}));
+import { getPreparedProducts } from './helpers/getPreparedProducts';
+import { getPreparedCategories } from './helpers/getPreparedCategories';
+import { ProductsList } from './components/ProductsList';
 
 export const App: React.FC = () => {
+  const [products] = useState(getPreparedProducts);
   const [selectedOwnerId, setSelectedOwnerId] = useState(0);
   const [nameFilter, setNameFilter] = useState('');
   const [selectedCategoriesId, setSelectedCategoriesId]
@@ -54,11 +35,11 @@ export const App: React.FC = () => {
   };
 
   const getFilteredProducts = () => {
-    let productsForShow = preparedProducts;
+    let productsForShow = products;
 
     productsForShow = (selectedOwnerId === 0)
-      ? preparedProducts
-      : preparedProducts
+      ? productsForShow
+      : productsForShow
         .filter(product => product.category?.owner?.id === selectedOwnerId);
 
     productsForShow = productsForShow.filter((product) => {
@@ -76,6 +57,7 @@ export const App: React.FC = () => {
     return productsForShow;
   };
 
+  const categories = getPreparedCategories();
   const visibleProducts = getFilteredProducts();
 
   return (
@@ -152,14 +134,14 @@ export const App: React.FC = () => {
                   'button',
                   'is-success',
                   'mr-6',
-                  { 'is-outlined': selectedCategoriesId.length !== 0 },
+                  { 'is-outlined': selectedCategoriesId.length },
                 )}
                 onClick={() => setSelectedCategoriesId([])}
               >
                 All
               </a>
 
-              {preparedCategories.map(({ id, title }) => (
+              {categories.map(({ id, title }) => (
                 <a
                   key={id}
                   data-cy="Category"

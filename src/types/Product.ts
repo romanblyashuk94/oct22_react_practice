@@ -4,5 +4,5 @@ export interface Product {
   id: number,
   name: string,
   categoryId: number,
-  category: Category | null,
+  category?: Category,
 }
