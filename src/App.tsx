@@ -56,6 +56,7 @@ export const App: React.FC = () => {
   const handleResetAllClick = () => {
     setSelectedOwnerId(0);
     setNameFilter('');
+    setSelectedCategoriesId([]);
   };
 
   const handleCategoryClick = (newId: number) => {
