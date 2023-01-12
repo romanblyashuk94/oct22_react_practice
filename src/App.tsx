@@ -48,6 +48,11 @@ export const App: React.FC = () => {
       return normalizeProductName.includes(normalizeNameFilterValue);
     });
 
+    if (selectedCategoriesId.length !== 0) {
+      productsForShow = productsForShow
+        .filter(({ categoryId }) => selectedCategoriesId.includes(categoryId));
+    }
+
     return productsForShow;
   };
 
@@ -142,7 +147,13 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 data-cy="AllCategories"
-                className="button is-success mr-6 is-outlined"
+                className={cn(
+                  'button',
+                  'is-success',
+                  'mr-6',
+                  { 'is-outlined': selectedCategoriesId.length !== 0 },
+                )}
+                onClick={() => setSelectedCategoriesId([])}
               >
                 All
               </a>
