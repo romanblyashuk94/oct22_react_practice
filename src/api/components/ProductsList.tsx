@@ -12,15 +12,20 @@ type Props = {
 export const ProductsList: FC<Props> = ({ visibleProducts }) => {
   const [sortType, setSortType] = useState(SortType.NONE);
   const [isReversed, setIsReversed] = useState(false);
+  const [sortClickNum, setSortClickNum] = useState(0);
 
-  const handleIdHeaderClick = () => {
-    if (sortType !== SortType.ID && !isReversed) {
-      setSortType(SortType.ID);
-    } else if (sortType === SortType.ID && !isReversed) {
+  const handleSortClick = (newSortType: SortType) => {
+    if (sortType !== newSortType) {
+      setSortType(newSortType);
+      setIsReversed(false);
+      setSortClickNum(1);
+    } else if (sortClickNum === 1) {
       setIsReversed(true);
+      setSortClickNum(2);
     } else {
       setSortType(SortType.NONE);
       setIsReversed(false);
+      setSortClickNum(0);
     }
   };
 
@@ -30,6 +35,29 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
     switch (sortType) {
       case SortType.ID:
         sortedProducts.sort((a, b) => a.id - b.id);
+        break;
+
+      case SortType.PRODUCT:
+        sortedProducts.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case SortType.CATEGORY:
+        sortedProducts.sort((a, b) => {
+          if (a.category && b.category) {
+            return a.category.title.localeCompare(b.category.title);
+          }
+
+          return 0;
+        });
+        break;
+
+      case SortType.USER:
+        sortedProducts.sort((a, b) => {
+          if (a?.category?.owner && b?.category?.owner) {
+            return a.category.owner.name.localeCompare(b.category.owner.name);
+          }
+
+          return 0;
+        });
         break;
 
       default:
@@ -66,16 +94,16 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
 
                     <a
                       href="#/"
-                      onClick={() => handleIdHeaderClick()}
+                      onClick={() => handleSortClick(SortType.ID)}
                     >
                       <span className="icon">
                         <i
                           data-cy="SortIcon"
                           className={cn(
                             'fas',
-                            { 'fa-sort': sortType !== SortType.ID && !isReversed },
-                            { 'fa-sort-up': sortType === SortType.ID && !isReversed },
-                            { 'fa-sort-down': sortType === SortType.ID && isReversed },
+                            { 'fa-sort': sortType !== SortType.ID },
+                            { 'fa-sort-up': sortType === SortType.ID && sortClickNum === 1 },
+                            { 'fa-sort-down': sortType === SortType.ID && sortClickNum === 2 },
 
                           )}
                         />
@@ -88,11 +116,17 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     Product
 
-                    <a href="#/">
+                    <a href="#/" onClick={() => handleSortClick(SortType.PRODUCT)}>
                       <span className="icon">
                         <i
                           data-cy="SortIcon"
-                          className="fas fa-sort-down"
+                          className={cn(
+                            'fas',
+                            { 'fa-sort': sortType !== SortType.PRODUCT },
+                            { 'fa-sort-up': sortType === SortType.PRODUCT && sortClickNum === 1 },
+                            { 'fa-sort-down': sortType === SortType.PRODUCT && sortClickNum === 2 },
+
+                          )}
                         />
                       </span>
                     </a>
@@ -103,9 +137,18 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     Category
 
-                    <a href="#/">
+                    <a href="#/" onClick={() => handleSortClick(SortType.CATEGORY)}>
                       <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort-up" />
+                        <i
+                          data-cy="SortIcon"
+                          className={cn(
+                            'fas',
+                            { 'fa-sort': sortType !== SortType.CATEGORY },
+                            { 'fa-sort-up': sortType === SortType.CATEGORY && sortClickNum === 1 },
+                            { 'fa-sort-down': sortType === SortType.CATEGORY && sortClickNum === 2 },
+
+                          )}
+                        />
                       </span>
                     </a>
                   </span>
@@ -115,9 +158,18 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     User
 
-                    <a href="#/">
+                    <a href="#/" onClick={() => handleSortClick(SortType.USER)}>
                       <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
+                        <i
+                          data-cy="SortIcon"
+                          className={cn(
+                            'fas',
+                            { 'fa-sort': sortType !== SortType.USER },
+                            { 'fa-sort-up': sortType === SortType.USER && sortClickNum === 1 },
+                            { 'fa-sort-down': sortType === SortType.USER && sortClickNum === 2 },
+
+                          )}
+                        />
                       </span>
                     </a>
                   </span>
