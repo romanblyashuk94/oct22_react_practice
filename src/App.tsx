@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useState } from 'react';
 import './App.scss';
 
@@ -29,6 +30,8 @@ const preparedProducts: Product[] = productsFromServer.map(product => ({
 export const App: React.FC = () => {
   const [selectedOwnerId, setSelectedOwnerId] = useState(0);
   const [nameFilter, setNameFilter] = useState('');
+  const [selectedCategoriesId, setSelectedCategoriesId]
+    = useState<number[]>([]);
 
   const filterProducts = (ownerId: number, nameFilterValue: string) => {
     let productsForShow = preparedProducts;
@@ -55,6 +58,19 @@ export const App: React.FC = () => {
     setNameFilter('');
   };
 
+  const handleCategoryClick = (newId: number) => {
+    if (!selectedCategoriesId.includes(newId)) {
+      setSelectedCategoriesId(prev => ([
+        ...prev,
+        newId,
+      ]));
+    } else {
+      setSelectedCategoriesId(prev => {
+        return prev.filter(id => id !== newId);
+      });
+    }
+  };
+
   return (
     <div className="section">
       <div className="container">
@@ -78,6 +94,7 @@ export const App: React.FC = () => {
 
               {usersFromServer.map(user => (
                 <a
+                  key={user.id}
                   data-cy="FilterUser"
                   href="#/"
                   onClick={() => setSelectedOwnerId(user.id)}
@@ -129,36 +146,24 @@ export const App: React.FC = () => {
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1"
-                href="#/"
-              >
-                Category 4
-              </a>
+              {preparedCategories.map(({ id, title }) => (
+                <a
+                  key={id}
+                  data-cy="Category"
+                  className={cn(
+                    'button',
+                    'mr-2',
+                    'my-1',
+                    {
+                      'is-info': selectedCategoriesId.includes(id),
+                    },
+                  )}
+                  href="#/"
+                  onClick={() => handleCategoryClick(id)}
+                >
+                  {title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
