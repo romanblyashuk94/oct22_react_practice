@@ -1,13 +1,50 @@
-import { FC } from 'react';
+/* eslint-disable max-len */
+import { FC, useState } from 'react';
 import cn from 'classnames';
 
 import { Product } from '../../types/Product';
+import { SortType } from '../../types/SortTypes';
 
 type Props = {
   visibleProducts: Product[]
 };
 
 export const ProductsList: FC<Props> = ({ visibleProducts }) => {
+  const [sortType, setSortType] = useState(SortType.NONE);
+  const [isReversed, setIsReversed] = useState(false);
+
+  const handleIdHeaderClick = () => {
+    if (sortType !== SortType.ID && !isReversed) {
+      setSortType(SortType.ID);
+    } else if (sortType === SortType.ID && !isReversed) {
+      setIsReversed(true);
+    } else {
+      setSortType(SortType.NONE);
+      setIsReversed(false);
+    }
+  };
+
+  const getSortedProducts = () => {
+    const sortedProducts = [...visibleProducts];
+
+    switch (sortType) {
+      case SortType.ID:
+        sortedProducts.sort((a, b) => a.id - b.id);
+        break;
+
+      default:
+        break;
+    }
+
+    if (isReversed) {
+      sortedProducts.reverse();
+    }
+
+    return sortedProducts;
+  };
+
+  const productsForShow = getSortedProducts();
+
   return (
     <div className="box table-container">
       {!visibleProducts.length
@@ -27,9 +64,21 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
                   <span className="is-flex is-flex-wrap-nowrap">
                     ID
 
-                    <a href="#/">
+                    <a
+                      href="#/"
+                      onClick={() => handleIdHeaderClick()}
+                    >
                       <span className="icon">
-                        <i data-cy="SortIcon" className="fas fa-sort" />
+                        <i
+                          data-cy="SortIcon"
+                          className={cn(
+                            'fas',
+                            { 'fa-sort': sortType !== SortType.ID && !isReversed },
+                            { 'fa-sort-up': sortType === SortType.ID && !isReversed },
+                            { 'fa-sort-down': sortType === SortType.ID && isReversed },
+
+                          )}
+                        />
                       </span>
                     </a>
                   </span>
@@ -77,7 +126,7 @@ export const ProductsList: FC<Props> = ({ visibleProducts }) => {
             </thead>
 
             <tbody>
-              {visibleProducts.map(({ id, name, category }) => (
+              {productsForShow.map(({ id, name, category }) => (
                 <tr key={id} data-cy="Product">
                   <td className="has-text-weight-bold" data-cy="ProductId">
                     {id}
