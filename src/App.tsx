@@ -10,6 +10,7 @@ import { ProductsList } from './components/ProductsList';
 
 export const App: React.FC = () => {
   const [products] = useState(getPreparedProducts);
+  const [categories] = useState(getPreparedCategories);
   const [selectedOwnerId, setSelectedOwnerId] = useState(0);
   const [nameFilter, setNameFilter] = useState('');
   const [selectedCategoriesId, setSelectedCategoriesId]
@@ -35,29 +36,24 @@ export const App: React.FC = () => {
   };
 
   const getFilteredProducts = () => {
-    let productsForShow = products;
-
-    productsForShow = (selectedOwnerId === 0)
-      ? productsForShow
-      : productsForShow
-        .filter(product => product.category?.owner?.id === selectedOwnerId);
-
-    productsForShow = productsForShow.filter((product) => {
+    return products.filter(product => {
+      const ownerId = product.category?.owner?.id;
       const normalizeProductName = product.name.toLowerCase();
-      const normalizeNameFilterValue = nameFilter.toLowerCase();
 
-      return normalizeProductName.includes(normalizeNameFilterValue);
+      const isSelectedOwnerIdMatch = (selectedOwnerId !== 0)
+        ? (ownerId === selectedOwnerId)
+        : true;
+
+      const isNameFilterMatch = normalizeProductName.includes(nameFilter.toLowerCase());
+
+      const isSelectedCategoriesMatch = (selectedCategoriesId.length !== 0)
+        ? selectedCategoriesId.includes(product.categoryId)
+        : true;
+
+      return isSelectedOwnerIdMatch && isNameFilterMatch && isSelectedCategoriesMatch;
     });
-
-    if (selectedCategoriesId.length !== 0) {
-      productsForShow = productsForShow
-        .filter(({ categoryId }) => selectedCategoriesId.includes(categoryId));
-    }
-
-    return productsForShow;
   };
 
-  const categories = getPreparedCategories();
   const visibleProducts = getFilteredProducts();
 
   return (
